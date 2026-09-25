@@ -1,0 +1,10 @@
+index="soc_lab" sourcetype="windows_security" EventCode=4625
+| rex field=_raw "Account For Which Logon Failed:\s+Security ID:\s+[^\r\n]*\s+Account Name:\s+(?<target_account>[^\r\n]+)"
+| rex field=_raw "(?m)^\s*Source Network Address:[ \t]*(?<source_ip>[^\r\n]+)"
+| eval event_time=_time
+| bin _time span=5m
+| stats count as failed_attempts earliest(event_time) as first_seen latest(event_time) as last_seen by _time source_ip target_account
+| where failed_attempts >= 5
+| convert ctime(first_seen) ctime(last_seen)
+| table _time source_ip target_account failed_attempts first_seen last_seen
+| sort _time
