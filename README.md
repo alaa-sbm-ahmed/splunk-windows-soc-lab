@@ -90,7 +90,7 @@ Combining successful and failed authentication events provided a clearer view of
 
 Event ID **4672** records special privileges assigned to a new logon.
 
-The investigation identified privileged logon events associated with `paba`.
+The investigation identified Event ID 4672 records associated with logon sessions for `paba`.
 
 ![Paba privileged sessions](screenshots/06-paba-privileged-sessions.png)
 
@@ -163,7 +163,7 @@ Rapid use of a newly created account is not necessarily malicious, but it can pr
 
 The complete SPL detection is available in:
 
-`detections/rapid-account-logon.spl`
+`detections/rapid-logon-after-account-creation.spl`
 
 ## Key Findings
 
