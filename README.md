@@ -78,7 +78,7 @@ This led to further investigation of authentication activity associated with `pa
 
 Event ID **4624** was used to investigate successful logons associated with the account.
 
-The results contained different logon types and authentication packages, including NTLM, Kerberos, and Negotiate.
+The results also contained different logon types and authentication packages, including NTLM, Kerberos, and Negotiate.
 
 ![Paba successful logons](screenshots/04-paba-successful-logons.png)
 
