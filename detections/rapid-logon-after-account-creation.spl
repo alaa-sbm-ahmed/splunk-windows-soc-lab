@@ -1,0 +1,15 @@
+index="soc_lab" sourcetype="windows_security" (EventCode=4720 OR EventCode=4624)
+| rex field=_raw "(?m)^\s*New Account:\s*\r?\n\s*Security ID:[ \t]*(?<created_sid>[^\r\n]*)\r?\n\s*Account Name:[ \t]*(?<created_account>[^\r\n]*)"
+| rex field=_raw "(?m)^\s*New Logon:\s*\r?\n\s*Security ID:[ \t]*(?<logon_sid>[^\r\n]*)\r?\n\s*Account Name:[ \t]*(?<logged_on_account>[^\r\n]*)"
+| rex field=_raw "(?m)^\s*Source Network Address:[ \t]*(?<source_ip>[^\r\n]+)"
+| eval account=coalesce(created_account,logged_on_account)
+| eval creation_time=if(EventCode=4720,_time,null())
+| eval successful_logon_time=if(EventCode=4624,_time,null())
+| eval logon_source=if(EventCode=4624,source_ip,null())
+| stats earliest(creation_time) as created_at earliest(successful_logon_time) as first_logon earliest(logon_source) as first_logon_source by account
+| where isnotnull(created_at) AND isnotnull(first_logon)
+| eval seconds_to_first_logon=first_logon-created_at
+| where seconds_to_first_logon>=0 AND seconds_to_first_logon<=300
+| convert ctime(created_at) ctime(first_logon)
+| table account created_at first_logon seconds_to_first_logon first_logon_source
+| sort seconds_to_first_logon
